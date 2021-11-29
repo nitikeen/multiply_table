@@ -9,10 +9,8 @@ try:
     with open("stat.json", "r") as read_file:
         stat = json.load(read_file)
 except IOError:
-    stat = dict(mul={a + 1: {b + 1: 100 for b in range(9)} for a in range(9)},
-                dev={a + 1: {b + 1: 100 for b in range(9)} for a in range(81)})
+    stat = dict()
 
-print(stat)
 print('Тренажер таблицы умножения и деления')
 while True:  # Повторяем опрос
     while True:  # Генерируем задачу
@@ -26,7 +24,15 @@ while True:  # Повторяем опрос
             a = b * random.randint(1, 9)
             fx = f'{a} : {b}'
             result = a / b
-        if random.randint(0, 100) <= stat[operation][str(a)][str(b)]:
+        stat_duration = 100
+        if operation not in stat:
+            stat[operation] = dict()
+        if str(a) not in stat[operation]:
+            stat[operation][str(a)] = dict()
+        if str(b) not in stat[operation][str(a)]:
+            stat[operation][str(a)][str(b)] = 100
+        stat_duration = stat[operation][str(a)][str(b)]
+        if random.randint(0, 100) <= stat_duration:
             break
     while True:
         try:
@@ -45,6 +51,6 @@ while True:  # Повторяем опрос
                 time.sleep(2)
             stat[operation][str(a)][str(b)] = (stat[operation][str(a)][str(b)] + answer_duration) / 2
             with open("stat.json", "w") as write_file:
-                json.dump(stat, write_file, indent=4)
+                json.dump(stat, write_file, indent=4, sort_keys=True)
             time.sleep(2)
             break
