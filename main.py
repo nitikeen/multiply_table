@@ -5,7 +5,7 @@ import json
 
 op = ('mul', 'dev')
 
-try:
+try:  # Открываем файл со статистикой
     with open("stat.json", "r") as read_file:
         stat = json.load(read_file)
 except IOError:
@@ -16,15 +16,15 @@ while True:  # Повторяем опрос
     while True:  # Генерируем задачу
         b = random.randint(1, 9)
         operation = random.choice(op)
-        if operation == 'mul':
+        if operation == 'mul':  # Умножение
             a = random.randint(1, 9)
             fx = f'{a} x {b}'
             result = a * b
-        else:
+        else:  # Деление
             a = b * random.randint(1, 9)
             fx = f'{a} : {b}'
             result = a / b
-        stat_duration = 100
+        # Проверяем, что данная задача есть в статистике, если нет - добавляем
         if operation not in stat:
             stat[operation] = dict()
         if str(a) not in stat[operation]:
@@ -32,9 +32,10 @@ while True:  # Повторяем опрос
         if str(b) not in stat[operation][str(a)]:
             stat[operation][str(a)][str(b)] = 100
         stat_duration = stat[operation][str(a)][str(b)]
+        # Чем лучше статистика по задаче, тем реже утверждаем эту задачу
         if random.randint(0, 100) <= stat_duration:
-            break
-    while True:
+            break  # Утвердили задачу
+    while True:  # Запрашиваем ответ
         try:
             start_time = datetime.now()
             answer = int(input(f'{fx} = '))
@@ -49,6 +50,7 @@ while True:  # Повторяем опрос
                 print(f'Не верно, {round(result)}')
                 answer_duration = 100
                 time.sleep(2)
+            # Обновляем статистику
             stat[operation][str(a)][str(b)] = (stat[operation][str(a)][str(b)] + answer_duration) / 2
             with open("stat.json", "w") as write_file:
                 json.dump(stat, write_file, indent=4, sort_keys=True)
